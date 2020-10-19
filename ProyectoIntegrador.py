@@ -56,7 +56,6 @@ def menu_nacional(archivo):
             casos_totales = casos_totales + int(matriz[longuitud_matriz-1][i+3])
         print(f"Los casos totales son de: {casos_totales}")
     elif tecla == 3:
-        mes = 0
         print("Elija un mes: ")
         print("1: Marzo")
         print("2: Abril")
@@ -65,15 +64,24 @@ def menu_nacional(archivo):
         print("5: Julio")
         tecla = int(input())
         
-        meses = {1: ["Marzo","03",31,matriz[0][3:35]], 2:["Abril","04",30,matriz[0][35:66]], 3: ["Mayo","05",31,matriz[0][66:98]], 4: ["Junio","06",30], 5: ["Julio","07",31]}
-        mes = meses[tecla]
-            
+        fechas = []
+        meses = {1: ["Marzo","03",len(matriz[0][3:30]),matriz[0][3:30],matriz[longuitud_matriz-1][3:30]],
+                 2:["Abril","04",len(matriz[0][30:60]),matriz[0][30:60],matriz[longuitud_matriz-1][30:60]], 
+                 3: ["Mayo","05",len(matriz[0][60:91]),matriz[0][60:91],matriz[longuitud_matriz-1][60:91]],
+                 4: ["Junio","06",len(matriz[0][91:121]),matriz[0][91:121],matriz[longuitud_matriz-1][91:121]], 
+                 5: ["Julio","07",len(matriz[0][121:]),matriz[0][121:],matriz[longuitud_matriz-1][121:]]}
         
-        dias = []
-        cantidad_dias = len(matriz[0][3:])
-        for i in range(cantidad_dias):
-            dias.append(i)
-        print(grafica(dias,matriz,meses))
+        mes = meses[tecla][0]
+        numero_dias = meses[tecla][2]
+        fechas = meses[tecla][3]
+        casos = meses[tecla][4]
+        for i in range(len(casos)):
+            casos[i] = int(casos[i])
+        cantidad_dias = []
+        for i in range(1,numero_dias+1):
+            cantidad_dias.append(i)
+            
+        print(grafica(mes,cantidad_dias,fechas,casos))
         
     elif tecla == 4:
         print(menu('Covid19_Casos_Diarios_Estado_Nacional_Confirmados_20200730.csv'))
@@ -117,18 +125,12 @@ def menu_de_estados(archivo):
         elif tecla == 4:
             menu('Covid19_Casos_Diarios_Estado_Nacional_Confirmados_20200730.csv')
             
-def grafica(dias,matriz,mes):
-    a = [0, -100, 25, 67, -323]
-    b = [0, 3, 7, 3, 9]
-    fecha = []
-    plt.title(f"Casos Covid en el mes de {mes[0]}")
+def grafica(mes,cantidad_dias,fechas,casos):
+
+    plt.title(f"Casos Covid en el mes de {mes}")
     plt.xlabel("Dias")
     plt.ylabel("Numero de casos")
-    plt.axis([-50, 80, 2, 8])
-    fecha.append(matriz[0][3:])
-    plt.xticks((dias), (fecha))
-    plt.plot(a, b, color="red")
-    
+    plt.plot(cantidad_dias, casos, color="red")
     
         
         
