@@ -28,9 +28,8 @@ def menu(archivo):
     
     archivo = open(archivo,"r")
 
-    
-    print("1: Mostrar datos Nacionales")
-    print("2: Mostrar datos de un Estado")
+    print("1: Mostrar Datos Nacionales")
+    print("2: Mostrar Datos De Un Estado")
     print("3: Salir")
     tecla = int(input())
     
@@ -46,6 +45,20 @@ def menu(archivo):
         return
         
 def menu_nacional(archivo):
+    
+    """
+    
+
+    Parameters
+    ----------
+    archivo : str
+        Archivos de casos de Covid.
+
+    Returns
+    -------
+    None.
+
+    """
     
     #Matriz de los datos del Archivo Covid
     matriz = []
@@ -69,17 +82,40 @@ def menu_nacional(archivo):
                  5: ["Julio","07",len(matriz[0][121:]),matriz[0][121:],matriz[longuitud_matriz-1][121:]]}
     
     if tecla == 1:
-        posicion = 0
-        print(f"Elije un dia: {matriz[0][3:]}")
-        dia = input()
-        posicion = matriz[0].index(dia)
-        print(f"El numero de casos en el dia {matriz[0][posicion]} es de {matriz[longuitud_matriz-1][posicion]}")
+        print("Elije un mes: ")
+        print("1: Marzo")
+        print("2: Abril")
+        print("3: Mayo")
+        print("4: Junio")
+        print("5: Julio")
+        mes = int(input())
+        
+        print("Elije un dia: ")
+        for i in range(meses[mes][2]):
+            print(f"{i}: dia {meses[mes][3][i][0:2]}")
+        dia = int(input())
+        
+        casos = int(meses[mes][4][dia])
+        dia = int(meses[mes][3][dia][0:2])
+        print(f"El numero de casos en el dia {dia} es de {casos}")
+        
+        print("1: Regresar al menu")
+        tecla = int(input())
+        if tecla == 1:
+            print(menu('Covid19_Casos_Diarios_Estado_Nacional_Confirmados_20200730.csv'))
+            
     elif tecla == 2:
         casos_totales = 0
         rango = len(matriz[longuitud_matriz-1][3:])
-        for i in range(rango):
-            casos_totales = casos_totales + int(matriz[longuitud_matriz-1][i+3])
+        for i in range(3,rango):
+            casos_totales = casos_totales + int(matriz[longuitud_matriz-1][i])
         print(f"Los casos totales son de: {casos_totales}")
+        
+        print("1: Regresar al menu")
+        tecla = int(input())
+        if tecla == 1:
+            print(menu('Covid19_Casos_Diarios_Estado_Nacional_Confirmados_20200730.csv'))
+            
     elif tecla == 3:
         print("Elija un mes: ")
         print("1: Marzo")
@@ -88,13 +124,10 @@ def menu_nacional(archivo):
         print("4: Junio")
         print("5: Julio")
         tecla = int(input())
-        
-        fechas = []
     
         
         mes = meses[tecla][0]
         numero_dias = meses[tecla][2]
-        fechas = meses[tecla][3]
         casos = meses[tecla][4]
         for i in range(len(casos)):
             casos[i] = int(casos[i])
@@ -102,23 +135,41 @@ def menu_nacional(archivo):
         for i in range(1,numero_dias+1):
             cantidad_dias.append(i)
             
-        print(grafica_mesesN(mes,cantidad_dias,fechas,casos))
+        print(grafica_mesesN(mes,cantidad_dias,casos))
         
     elif tecla == 4:
         nombre_meses = []
         for i in range(1,len(meses)+1):
             nombre_meses.append(meses[i][0])
-        casos = []
-        for i in range(1,len(meses)+1):
-            casos.append(max((meses[i][4])))
-        for i in range(len(meses)):
-            casos[i] = int(casos[i])
-        print(grafica_total(nombre_meses,casos))
             
+        casos_mes = []
+        suma = 0
+        for i in range(1,len(meses)+1):
+            for j in range(meses[i][2]):
+                suma = suma +int(meses[i][4][j])
+            casos_mes.append(suma)
+            suma = 0
+            
+        print(grafica_total(nombre_meses,casos_mes))
+        
     elif tecla == 5:
         print(menu('Covid19_Casos_Diarios_Estado_Nacional_Confirmados_20200730.csv'))
         
 def menu_de_estados(archivo):
+    """
+    
+
+    Parameters
+    ----------
+    archivo : str
+        Archivos de casos de Covid.
+
+    Returns
+    -------
+    None.
+
+    """
+    
     matriz = []
     estados = {}
     for linea in archivo:
@@ -169,13 +220,10 @@ def menu_de_estados(archivo):
             print("4: Junio")
             print("5: Julio")
             tecla = int(input())
-            
-            fechas = []
         
             
             mes = meses[tecla][0]
             numero_dias = meses[tecla][2]
-            fechas = meses[tecla][3]
             casos = meses[tecla][4]
             for i in range(len(casos)):
                 casos[i] = int(casos[i])
@@ -183,28 +231,72 @@ def menu_de_estados(archivo):
             for i in range(1,numero_dias+1):
                 cantidad_dias.append(i)
                 
-            print(grafica_mesesE(mes,cantidad_dias,fechas,casos,estados,llave))
+            print(grafica_mesesE(mes,cantidad_dias,casos,estados,llave))
         elif tecla == 4:
             nombre_meses = []
             for i in range(1,len(meses)+1):
                 nombre_meses.append(meses[i][0])
-            casos = []
+            
+            casos_mes = []
+            suma = 0
             for i in range(1,len(meses)+1):
-                casos.append(max((meses[i][4])))
-            for i in range(len(meses)):
-                casos[i] = int(casos[i])
-            print(grafica_total(nombre_meses,casos))
+                for j in range(meses[i][2]):
+                    suma = suma +int(meses[i][4][j])
+                casos_mes.append(suma)
+                suma = 0
+            
+            print(grafica_total(nombre_meses,casos_mes))
         elif tecla == 5:
             menu('Covid19_Casos_Diarios_Estado_Nacional_Confirmados_20200730.csv')
             
-def grafica_mesesN(mes,cantidad_dias,fechas,casos):
+def grafica_mesesN(mes,cantidad_dias,casos):
+
+    """
+    
+
+    Parameters
+    ----------
+    mes : str
+        Mes de la grafica.
+    cantidad_dias : list
+        Cantidad de dias en el mes.
+    casos : list
+        Numero de casos por dia.
+
+    Returns
+    -------
+    None.
+
+    """
 
     plt.title(f"Casos Covid en el mes de {mes}")
     plt.xlabel("Dias")
     plt.ylabel("Numero de casos")
     plt.plot(cantidad_dias, casos, color="red")
     
-def grafica_mesesE(mes,cantidad_dias,fechas,casos,estados,llave):
+def grafica_mesesE(mes,cantidad_dias,casos,estados,llave):
+    
+    """
+    
+
+    Parameters
+    ----------
+    mes : str
+        Mes de los casos.
+    cantidad_dias : list
+        Cantidad de dias que hay en el mes.
+    casos : list
+        Cantidad de casos confirmados por dia.
+    estados : dict
+        Estados que hay en Mexico.
+    llave : int
+        Llave para acceder a los estados.
+
+    Returns
+    -------
+    None.
+
+    """
 
     plt.title(f"Casos Covid en el mes de {mes} de {estados[llave][2]}")
     plt.xlabel("Dias")
@@ -212,6 +304,22 @@ def grafica_mesesE(mes,cantidad_dias,fechas,casos,estados,llave):
     plt.plot(cantidad_dias, casos, color="red")
     
 def grafica_total(nombre_meses,casos):
+
+    """
+    
+
+    Parameters
+    ----------
+    nombre_meses : list
+        Nombre de los meses.
+    casos : list
+        Numero de casos por mes.
+
+    Returns
+    -------
+    None.
+
+    """
     plt.bar(nombre_meses,casos)
     
 #Se llama a menu y se le pasa el archivo de casos diarios confirmados de Covid.
